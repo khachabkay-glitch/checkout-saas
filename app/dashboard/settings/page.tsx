@@ -159,3 +159,250 @@ export default function SettingsPage() {
           <section className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-1">Store Information</h2>
             <p className="text-sm text-gray-500 mb-6">Basic details about your store.</p>
+
+            <div className="space-y-5">
+              <FieldGroup label="Store Name" htmlFor="store_name">
+                <input
+                  id="store_name"
+                  type="text"
+                  value={form.store_name}
+                  onChange={(e) => handleChange("store_name", e.target.value)}
+                  placeholder="My Store"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </FieldGroup>
+
+              <FieldGroup label="Store URL" htmlFor="store_url">
+                <input
+                  id="store_url"
+                  type="text"
+                  value={form.store_url}
+                  onChange={(e) => handleChange("store_url", e.target.value)}
+                  placeholder="https://mystore.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </FieldGroup>
+            </div>
+          </section>
+
+          {/* Shopify Configuration */}
+          <section className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-1">Shopify Configuration</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Connect your Shopify store to enable order syncing.
+            </p>
+
+            <div className="space-y-5">
+              <FieldGroup label="Shopify Domain" htmlFor="shopify_domain">
+                <input
+                  id="shopify_domain"
+                  type="text"
+                  value={form.shopify_domain}
+                  onChange={(e) => handleChange("shopify_domain", e.target.value)}
+                  placeholder="mystore.myshopify.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </FieldGroup>
+
+              <FieldGroup label="Shopify Access Token" htmlFor="shopify_token">
+                <div className="relative">
+                  <input
+                    id="shopify_token"
+                    type={showShopifyToken ? "text" : "password"}
+                    value={form.shopify_token}
+                    onChange={(e) => handleChange("shopify_token", e.target.value)}
+                    placeholder="shpat_xxxxxxxxxxxxxxxx"
+                    className="w-full px-3 py-2 pr-20 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowShopifyToken((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 font-medium"
+                  >
+                    {showShopifyToken ? "Hide" : "Reveal"}
+                  </button>
+                </div>
+              </FieldGroup>
+            </div>
+          </section>
+
+          {/* Whop Configuration */}
+          <section className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-1">Whop Configuration</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Configure your Whop integration for payment processing.
+            </p>
+
+            <div className="space-y-5">
+              <FieldGroup label="Whop API Key" htmlFor="whop_api_key">
+                <div className="relative">
+                  <input
+                    id="whop_api_key"
+                    type={showWhopApiKey ? "text" : "password"}
+                    value={form.whop_api_key}
+                    onChange={(e) => handleChange("whop_api_key", e.target.value)}
+                    placeholder="whop_xxxxxxxxxxxxxxxx"
+                    className="w-full px-3 py-2 pr-20 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowWhopApiKey((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 font-medium"
+                  >
+                    {showWhopApiKey ? "Hide" : "Reveal"}
+                  </button>
+                </div>
+              </FieldGroup>
+
+              <FieldGroup label="Whop Company ID" htmlFor="whop_company_id">
+                <input
+                  id="whop_company_id"
+                  type="text"
+                  value={form.whop_company_id}
+                  onChange={(e) => handleChange("whop_company_id", e.target.value)}
+                  placeholder="biz_xxxxxxxx"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </FieldGroup>
+
+              <FieldGroup label="Whop Product ID" htmlFor="whop_product_id">
+                <input
+                  id="whop_product_id"
+                  type="text"
+                  value={form.whop_product_id}
+                  onChange={(e) => handleChange("whop_product_id", e.target.value)}
+                  placeholder="prod_xxxxxxxx"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </FieldGroup>
+            </div>
+          </section>
+
+          {/* Branding */}
+          <section className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-1">Branding</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Customize the look of your checkout experience.
+            </p>
+
+            <div className="space-y-5">
+              <FieldGroup label="Brand Color" htmlFor="brand_color">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={form.brand_color}
+                    onChange={(e) => handleChange("brand_color", e.target.value)}
+                    className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    id="brand_color"
+                    type="text"
+                    value={form.brand_color}
+                    onChange={(e) => handleChange("brand_color", e.target.value)}
+                    placeholder="#000000"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
+                  />
+                </div>
+              </FieldGroup>
+
+              <FieldGroup label="Accent Color" htmlFor="accent_color">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={form.accent_color}
+                    onChange={(e) => handleChange("accent_color", e.target.value)}
+                    className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    id="accent_color"
+                    type="text"
+                    value={form.accent_color}
+                    onChange={(e) => handleChange("accent_color", e.target.value)}
+                    placeholder="#4F46E5"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
+                  />
+                </div>
+              </FieldGroup>
+
+              <FieldGroup label="Logo URL" htmlFor="logo_url">
+                <input
+                  id="logo_url"
+                  type="text"
+                  value={form.logo_url}
+                  onChange={(e) => handleChange("logo_url", e.target.value)}
+                  placeholder="https://cdn.example.com/logo.png"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                {form.logo_url && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={form.logo_url}
+                        alt="Logo preview"
+                        className="max-w-full max-h-full object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs text-gray-400">Preview</span>
+                  </div>
+                )}
+              </FieldGroup>
+            </div>
+          </section>
+
+          {/* Custom Domain */}
+          <section className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-1">Custom Domain</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Use your own domain for the checkout page.
+            </p>
+
+            <FieldGroup label="Custom Domain" htmlFor="custom_domain">
+              <input
+                id="custom_domain"
+                type="text"
+                value={form.custom_domain}
+                onChange={(e) => handleChange("custom_domain", e.target.value)}
+                placeholder="checkout.mystore.com"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+            </FieldGroup>
+          </section>
+
+          {/* Save Button */}
+          <div className="flex justify-end pt-2 pb-8">
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {saving ? "Saving..." : "Save Settings"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function FieldGroup({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} className="block text-sm font-medium text-gray-700 mb-1.5">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
