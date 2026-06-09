@@ -1,28 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession, encodeSessionToken } from "@/lib/session";
+import { verifyWhopPayment } from "@/lib/whop";
+import { getMerchantByStoreId } from "@/lib/merchant";
 
-export async function GET(req: NextRequest) {
-  const sessionId = req.nextUrl.searchParams.get("sessionId");
-  if (!sessionId) {
-    return NextResponse.json(
-      { error: "Missing sessionId" },
-      { status: 400 }
-    );
+export async function POST(req: NextRequest) {
+  try {
+    const { checkoutSessionId, storeId } = await req.json();
+    if (!checkoutSessionId) return NextResponse.json({ error: "Missing checkoutSessionId" }, { status: 400 });
+
+    let merchantConfig;
+    if (storeId) {
+      const merchant = await getMerchantByStoreId(storeId);
+      if (merchant) {
+        merchantConfig = { whop_api_key: merchant.whop_api_key, whop_company_id: merchant.whop_company_id };
+      }
+    }
+
+    const result = await verifyWhopPayment(checkoutSessionId, undefined, merchantConfig);
+    return NextResponse.json({ paid: result.paid, membershipId: result.membershipId });
+  } catch (err: any) {
+    console.error("Payment status check error:", err);
+    return NextResponse.json({ paid: false, error: err.message });
   }
-
-  const session = getSession(sessionId);
-  if (!session) {
-    return NextResponse.json(
-      { error: "Session not found" },
-      { status: 404 }
-    );
-  }
-
-  return NextResponse.json({
-    sessionId: session.id,
-    paymentStatus: session.paymentStatus,
-    orderId: session.orderId,
-    orderName: session.orderName,
-    sessionToken: encodeSessionToken(session),
-  });
 }

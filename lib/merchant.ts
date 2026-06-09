@@ -158,3 +158,29 @@ export async function getMerchantById(
 
   return merchant;
 }
+
+
+export async function getMerchantByStoreId(
+  storeId: string
+): Promise<MerchantConfig | null> {
+  const cacheKey = "store:" + storeId;
+  const cached = getCached(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const supabase = getSupabaseServerClient();
+  const { data } = await supabase
+    .from("merchants")
+    .select("*")
+    .eq("shopify_domain", storeId)
+    .single();
+
+  const merchant = data ? rowToMerchant(data) : null;
+  setCache(cacheKey, merchant);
+
+  if (merchant) {
+    setCache("id:" + merchant.id, merchant);
+    setCache("slug:" + merchant.slug, merchant);
+  }
+
+  return merchant;
+}
