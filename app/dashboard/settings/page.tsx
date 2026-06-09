@@ -103,7 +103,7 @@ export default function SettingsPage() {
     <div>
       {toast && (
         <div className="fixed top-6 right-6 z-50">
-          <div className={\`px-5 py-3 rounded-lg shadow-lg text-sm font-medium \${toast.type === "success" ? "bg-green-50 text-green-800 border border-green-200" : "bg-red-50 text-red-800 border border-red-200"}\`}>
+          <div className={`px-5 py-3 rounded-lg shadow-lg text-sm font-medium \${toast.type === "success" ? "bg-green-50 text-green-800 border border-green-200" : "bg-red-50 text-red-800 border border-red-200"}`}>
             {toast.message}
           </div>
         </div>
