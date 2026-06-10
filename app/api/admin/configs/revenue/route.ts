@@ -19,10 +19,11 @@ export async function POST(req: NextRequest) {
     );
 
   try {
-    const allPayments = [];
+    const allPayments: any[] = [];
     let page = 1;
     let hasMore = true;
 
+    // Paginate through payments (max 5 pages = 500 payments)
     while (hasMore && page <= 5) {
       const res = await fetch(
         `${WHOP_BASE}/payments?per=100&page=${page}`,
@@ -33,7 +34,10 @@ export async function POST(req: NextRequest) {
         if (page === 1) {
           const errText = await res.text();
           return NextResponse.json(
-            { error: `Whop API error (${res.status})`, detail: errText },
+            {
+              error: `Whop API error (${res.status})`,
+              detail: errText,
+            },
             { status: 502 }
           );
         }
@@ -48,8 +52,11 @@ export async function POST(req: NextRequest) {
       page++;
     }
 
+    // Calculate revenue
     const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(
+      now.getTime() - 30 * 24 * 60 * 60 * 1000
+    );
 
     let totalRevenue = 0;
     let last30dRevenue = 0;
@@ -58,18 +65,25 @@ export async function POST(req: NextRequest) {
     let currency = "EUR";
 
     for (const p of allPayments) {
-      const isPaid = p.status === "paid" || p.status === "completed" || p.status === "complete";
+      const isPaid =
+        p.status === "paid" ||
+        p.status === "completed" ||
+        p.status === "complete";
       if (!isPaid) continue;
 
+      // Whop returns amounts in full currency units (e.g. 99.9 = €99.90)
       const rawAmount = p.final_amount ?? p.amount ?? p.total ?? 0;
-      const amount = typeof rawAmount === "number" ? rawAmount / 100 : 0;
+      const amount =
+        typeof rawAmount === "number" ? rawAmount : 0;
 
       if (p.currency) currency = p.currency.toUpperCase();
 
       totalRevenue += amount;
       totalOrders++;
 
-      const createdAt = new Date(p.created_at || p.created || 0);
+      // Whop returns Unix timestamps in seconds — convert to ms
+      const ts = p.created_at || p.created || 0;
+      const createdAt = new Date(ts > 1e12 ? ts : ts * 1000);
       if (createdAt >= thirtyDaysAgo) {
         last30dRevenue += amount;
         last30dOrders++;
@@ -83,7 +97,7 @@ export async function POST(req: NextRequest) {
       last_30d_orders: last30dOrders,
       currency,
     });
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { error: err.message || "Failed to fetch revenue" },
       { status: 500 }

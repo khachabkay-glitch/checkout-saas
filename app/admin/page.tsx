@@ -19,7 +19,15 @@ interface WhopConfig {
   api_key: string;
   is_live: boolean;
   created_at: string;
+  target_project?: string;
 }
+
+/* Project → domain mapping */
+const PROJECTS: Record<string, string> = {
+  "serravalle-checkout": "checkout.serravallee.it",
+  "astheye-checkout": "checkout.astheye.com",
+};
+const PROJECT_LIST = Object.keys(PROJECTS);
 
 interface Revenue {
   total_revenue: number;
@@ -103,7 +111,7 @@ export default function AdminPage() {
   const [liveSuccess, setLiveSuccess] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", product_id: "", company_id: "", api_key: "" });
+  const [form, setForm] = useState({ name: "", product_id: "", company_id: "", api_key: "", target_project: "serravalle-checkout" });
   const [formErr, setFormErr] = useState("");
   const [formSaving, setFormSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -282,7 +290,7 @@ export default function AdminPage() {
       if (res.ok) {
         setShowForm(false);
         setEditId(null);
-        setForm({ name: "", product_id: "", company_id: "", api_key: "" });
+        setForm({ name: "", product_id: "", company_id: "", api_key: "", target_project: "serravalle-checkout" });
         await fetchConfigs();
       } else {
         const d = await res.json();
@@ -321,6 +329,7 @@ export default function AdminPage() {
       product_id: c.product_id,
       company_id: c.company_id,
       api_key: c.api_key,
+      target_project: c.target_project || "serravalle-checkout",
     });
     setShowForm(true);
     setFormErr("");
@@ -376,7 +385,7 @@ export default function AdminPage() {
               <button
                 onClick={() => {
                   setEditId(null);
-                  setForm({ name: "", product_id: "", company_id: "", api_key: "" });
+                  setForm({ name: "", product_id: "", company_id: "", api_key: "", target_project: "serravalle-checkout" });
                   setShowForm(true);
                   setFormErr("");
                 }}
@@ -399,6 +408,14 @@ export default function AdminPage() {
                   <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Serravalle Main" style={s.input} />
                 </div>
                 <div>
+                  <label style={s.label}>Target Project</label>
+                  <select value={form.target_project} onChange={(e) => setForm((f) => ({ ...f, target_project: e.target.value }))} style={{ ...s.input, cursor: "pointer" }}>
+                    {PROJECT_LIST.map((p) => (
+                      <option key={p} value={p}>{p} → {PROJECTS[p]}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label style={s.label}>Product ID</label>
                   <input value={form.product_id} onChange={(e) => setForm((f) => ({ ...f, product_id: e.target.value }))} placeholder="prod_..." style={{ ...s.input, fontFamily: "monospace" }} />
                 </div>
@@ -406,7 +423,7 @@ export default function AdminPage() {
                   <label style={s.label}>Company ID</label>
                   <input value={form.company_id} onChange={(e) => setForm((f) => ({ ...f, company_id: e.target.value }))} placeholder="biz_..." style={{ ...s.input, fontFamily: "monospace" }} />
                 </div>
-                <div>
+                <div style={{ gridColumn: "1 / -1" }}>
                   <label style={s.label}>API Key</label>
                   <input value={form.api_key} onChange={(e) => setForm((f) => ({ ...f, api_key: e.target.value }))} placeholder="apik_..." style={{ ...s.input, fontFamily: "monospace" }} />
                 </div>
@@ -472,6 +489,9 @@ export default function AdminPage() {
                       {justWentLive && (
                         <span style={s.successBadge}>Deployed</span>
                       )}
+                      <span style={{ fontSize: 10, color: "#999", fontWeight: 400 }}>
+                        → {PROJECTS[c.target_project || "serravalle-checkout"] || c.target_project}
+                      </span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {rev ? (
@@ -586,7 +606,7 @@ export default function AdminPage() {
                         )}
                         {c.is_live && (
                           <span style={{ fontSize: 12, color: "#059669", fontWeight: 500 }}>
-                            Currently active on checkout.serravallee.it
+                            Currently active on {PROJECTS[c.target_project || "serravalle-checkout"] || c.target_project}
                           </span>
                         )}
                       </div>
@@ -682,6 +702,12 @@ export default function AdminPage() {
         <br />
         Redeployment takes ~30 seconds after saving.
       </p>
+
+      {tab === "office" && (
+        <p style={{ fontSize: 11, color: "#bbb", textAlign: "center" as const, marginTop: 4 }}>
+          Projects: {PROJECT_LIST.map((p) => `${p} → ${PROJECTS[p]}`).join(" · ")}
+        </p>
+      )}
     </div>
   );
 }
