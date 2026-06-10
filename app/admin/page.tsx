@@ -251,15 +251,15 @@ export default function AdminPage() {
     }
   };
 
-  /* ── Go live ── */
-  const goLive = async (id: string) => {
+  /* ── Go live on a specific project ── */
+  const goLive = async (id: string, targetProject?: string) => {
     setGoingLiveId(id);
     setLiveSuccess(null);
     try {
       const res = await fetch("/api/admin/configs/go-live", {
         method: "POST",
         headers: hdrs(),
-        body: JSON.stringify({ configId: id }),
+        body: JSON.stringify({ configId: id, targetProject }),
       });
       const data = await res.json();
       if (data.success) {
@@ -589,26 +589,41 @@ export default function AdminPage() {
                             </button>
                           )}
                         </div>
-                        {!c.is_live && (
-                          <button
-                            onClick={() => goLive(c.id)}
-                            disabled={isGoingLive}
-                            style={{
-                              ...s.btnPrimary,
-                              width: "auto",
-                              padding: "8px 24px",
-                              fontSize: 13,
-                              opacity: isGoingLive ? 0.5 : 1,
-                            }}
-                          >
-                            {isGoingLive ? "Deploying..." : "Make Live"}
-                          </button>
-                        )}
-                        {c.is_live && (
-                          <span style={{ fontSize: 12, color: "#059669", fontWeight: 500 }}>
-                            Currently active on {PROJECTS[c.target_project || "serravalle-checkout"] || c.target_project}
-                          </span>
-                        )}
+                      </div>
+
+                      {/* Per-Project Go Live Buttons */}
+                      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                        {PROJECT_LIST.map((proj) => {
+                          const domain = PROJECTS[proj];
+                          const isLiveHere = c.is_live && (c.target_project || "serravalle-checkout") === proj;
+                          return (
+                            <button
+                              key={proj}
+                              onClick={() => goLive(c.id, proj)}
+                              disabled={isGoingLive || isLiveHere}
+                              style={{
+                                flex: 1,
+                                padding: "10px 12px",
+                                fontSize: 12,
+                                fontWeight: 600,
+                                color: isLiveHere ? "#059669" : "#fff",
+                                background: isLiveHere ? "#ecfdf5" : "#111",
+                                border: isLiveHere ? "1.5px solid #059669" : "1.5px solid #111",
+                                borderRadius: 8,
+                                cursor: isGoingLive || isLiveHere ? "default" : "pointer",
+                                opacity: isGoingLive && !isLiveHere ? 0.5 : 1,
+                                transition: "all 0.15s",
+                                whiteSpace: "nowrap" as const,
+                              }}
+                            >
+                              {isGoingLive && !isLiveHere
+                                ? "Deploying..."
+                                : isLiveHere
+                                ? `✓ Live on ${domain}`
+                                : `▶ ${domain}`}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

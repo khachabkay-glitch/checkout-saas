@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
   if (!auth(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { configId } = await req.json();
+  const { configId, targetProject } = await req.json();
   if (!configId)
     return NextResponse.json(
       { error: "Config ID required" },
@@ -151,6 +151,11 @@ export async function POST(req: NextRequest) {
   const config = configs.find((c) => c.id === configId);
   if (!config)
     return NextResponse.json({ error: "Config not found" }, { status: 404 });
+
+  // If targetProject provided, update the config's target
+  if (targetProject) {
+    config.target_project = targetProject;
+  }
 
   // Use target_project from config, fallback to default
   const proj = config.target_project || TARGET_PROJECT;
