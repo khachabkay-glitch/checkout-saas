@@ -13,6 +13,7 @@ interface WhopConfig {
   api_key: string;
   is_live: boolean;
   created_at: string;
+  target_project?: string;
 }
 
 function tq() {
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
   if (!auth(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, product_id, company_id, api_key } = await req.json();
+  const { name, product_id, company_id, api_key, target_project } = await req.json();
   if (!name || !product_id || !company_id || !api_key) {
     return NextResponse.json(
       { error: "All fields required" },
@@ -129,6 +130,7 @@ export async function POST(req: NextRequest) {
     api_key,
     is_live: configs.length === 0,
     created_at: new Date().toISOString(),
+    target_project: target_project || "serravalle-checkout",
   };
 
   configs.push(nc);
@@ -145,7 +147,7 @@ export async function PATCH(req: NextRequest) {
   if (!auth(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id, name, product_id, company_id, api_key } = await req.json();
+  const { id, name, product_id, company_id, api_key, target_project } = await req.json();
   if (!id)
     return NextResponse.json(
       { error: "Config ID required" },
@@ -161,6 +163,7 @@ export async function PATCH(req: NextRequest) {
   if (product_id !== undefined) c.product_id = product_id;
   if (company_id !== undefined) c.company_id = company_id;
   if (api_key !== undefined) c.api_key = api_key;
+  if (target_project !== undefined) c.target_project = target_project;
 
   if (!(await saveConfigs(envId, configs))) {
     return NextResponse.json({ error: "Failed to save" }, { status: 500 });
