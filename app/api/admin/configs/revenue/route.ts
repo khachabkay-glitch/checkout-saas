@@ -58,10 +58,16 @@ export async function POST(req: NextRequest) {
       now.getTime() - 30 * 24 * 60 * 60 * 1000
     );
 
+    // Start of today (UTC)
+    const todayStart = new Date(now);
+    todayStart.setUTCHours(0, 0, 0, 0);
+
     let totalRevenue = 0;
     let last30dRevenue = 0;
+    let todayRevenue = 0;
     let totalOrders = 0;
     let last30dOrders = 0;
+    let todayOrders = 0;
     let currency = "EUR";
 
     for (const p of allPayments) {
@@ -88,13 +94,19 @@ export async function POST(req: NextRequest) {
         last30dRevenue += amount;
         last30dOrders++;
       }
+      if (createdAt >= todayStart) {
+        todayRevenue += amount;
+        todayOrders++;
+      }
     }
 
     return NextResponse.json({
       total_revenue: Math.round(totalRevenue * 100) / 100,
       last_30d_revenue: Math.round(last30dRevenue * 100) / 100,
+      today_revenue: Math.round(todayRevenue * 100) / 100,
       total_orders: totalOrders,
       last_30d_orders: last30dOrders,
+      today_orders: todayOrders,
       currency,
     });
   } catch (err: any) {
